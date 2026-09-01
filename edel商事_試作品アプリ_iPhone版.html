@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1677ff">
+<title>エーデル商事 施工管理</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef1f5;color:#182230;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif}
+.app{max-width:480px;margin:auto;min-height:100vh;background:#fff}.top{position:sticky;top:0;background:#fff;border-bottom:1px solid #e7eaf0;padding:16px 18px;z-index:5}.top b{font-size:19px}.content{padding:16px 16px 92px}.hero{background:#edf5ff;border-radius:18px;padding:18px;margin-bottom:14px}.hero h1{font-size:22px;margin:0 0 5px}.muted{color:#667085;font-size:13px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card,.tile{border:1px solid #e5e9ef;border-radius:16px;padding:15px;background:#fff;margin-bottom:12px}.tile{font-weight:800;font-size:15px;min-height:105px;cursor:pointer}.tile span{display:block;font-size:28px;margin-bottom:12px}button{border:0;border-radius:12px;padding:13px 15px;background:#1677ff;color:white;font-size:15px;font-weight:800;width:100%;margin-top:7px}button.alt{background:white;color:#1677ff;border:1px solid #1677ff}.back{background:none;color:#1677ff;padding:0;width:auto;margin:0 0 10px}input,textarea,select{width:100%;border:1px solid #d6dbe4;border-radius:10px;padding:12px;font-size:15px;margin:6px 0 12px}label{font-size:13px;font-weight:800}.row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #edf0f3}.total{font-weight:900;font-size:17px}.screen{display:none}.screen.on{display:block}.badge{font-size:12px;border-radius:99px;padding:4px 8px;background:#eef5ff;color:#175cd3;font-weight:800}.empty{text-align:center;padding:24px;color:#667085}.toast{display:none;position:fixed;bottom:76px;left:50%;transform:translateX(-50%);background:#182230;color:white;padding:10px 16px;border-radius:99px;z-index:20;font-size:13px}nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;background:#fff;border-top:1px solid #e5e7eb;z-index:10}nav button{background:#fff;color:#667085;border-radius:0;margin:0;font-size:12px;padding:10px 4px}.hint{background:#fff8e6;border:1px solid #f4d58d;border-radius:12px;padding:12px;font-size:13px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="top"><b id="title">エーデル商事 施工管理</b></div>
+<div class="content">
+
+<section id="home" class="screen on">
+<div class="hero"><h1>エーデル商事 施工管理</h1><div class="muted">現場・見積書・写真報告書・歩合・共有</div></div>
+<div class="hint">📱 iPhone用試作品です。まず「現場登録」から入力して保存できます。</div>
+<button onclick="go('new','新しい現場')">＋ 現場を登録</button>
+<div class="grid" style="margin-top:12px">
+<div class="tile" onclick="go('sites','現場一覧')"><span>📋</span>現場一覧</div>
+<div class="tile" onclick="go('estimate','見積書')"><span>🧾</span>見積書</div>
+<div class="tile" onclick="go('report','写真報告書')"><span>📸</span>写真報告書</div>
+<div class="tile" onclick="go('commission','歩合表')"><span>💰</span>歩合表</div>
+</div>
+<div class="card"><div class="row"><span>登録現場</span><b id="cnt">0</b></div><div class="row"><span>共有中</span><b id="shcnt">0</b></div></div>
+</section>
+
+<section id="new" class="screen">
+<button class="back" onclick="go('home','エーデル商事 施工管理')">← 戻る</button>
+<div class="card"><h2>新しい現場</h2>
+<label>現場名</label><input id="site" placeholder="例：ハイム田原">
+<label>現場住所</label><input id="addr" placeholder="住所">
+<label>作業日</label><input id="date" type="date">
+<label>施工内容</label><textarea id="work" placeholder="施工内容"></textarea>
+<label>金額</label><input id="amount" type="number" min="0" placeholder="0">
+<button onclick="save()">保存する</button></div>
+</section>
+
+<section id="sites" class="screen">
+<button class="back" onclick="go('home','エーデル商事 施工管理')">← 戻る</button><div id="list"></div>
+</section>
+
+<section id="detail" class="screen"><button class="back" onclick="go('sites','現場一覧')">← 戻る</button><div id="detailbox"></div></section>
+
+<section id="estimate" class="screen">
+<button class="back" onclick="go('home','エーデル商事 施工管理')">← 戻る</button>
+<div class="card"><h2>見積書</h2>
+<label>宛名</label><input id="eto" placeholder="〇〇様"><label>件名</label><input id="esub" value="施工・防除作業">
+<label>現場住所</label><input id="eaddr"><label>施工先</label><input id="eplace"><label>内容</label><textarea id="econ"></textarea>
+<label>数量</label><input id="eqty" type="number" value="1" oninput="calc()"><label>単位</label><input id="eunit" value="式">
+<label>単価</label><input id="eprice" type="number" value="0" oninput="calc()">
+<div class="row"><span>小計</span><b id="sub">¥0</b></div><div class="row"><span>消費税10%</span><b id="tax">¥0</b></div><div class="row total"><span>お見積金額(税込)</span><b id="tot">¥0</b></div>
+<button onclick="saveEstimate()">保存する</button><button class="alt" onclick="window.print()">印刷・PDF保存</button></div>
+</section>
+
+<section id="report" class="screen">
+<button class="back" onclick="go('home','エーデル商事 施工管理')">← 戻る</button>
+<div class="card"><h2>写真報告書</h2><label>現場名</label><input id="rsite"><label>作業日</label><input id="rdate" type="date"><label>住所</label><input id="raddr"><label>写真</label><input id="rphoto" type="file" accept="image/*" capture="environment"><label>コメント</label><textarea id="rcomment"></textarea><button onclick="saveReport()">保存する</button><button class="alt" onclick="window.print()">印刷・PDF保存</button></div>
+</section>
+
+<section id="commission" class="screen">
+<button class="back" onclick="go('home','エーデル商事 施工管理')">← 戻る</button>
+<div class="card"><h2>エーデル商事株式会社 上村彰</h2><div id="comm"></div><button onclick="addComm()">＋ 次の番号を追加</button></div>
+</section>
+
+<section id="share" class="screen"><button class="back" onclick="go('home','エーデル商事 施工管理')">← 戻る</button><div class="card"><h2>共有</h2><div id="shares"></div></div></section>
+<section id="notice" class="screen"><button class="back" onclick="go('home','エーデル商事 施工管理')">← 戻る</button><div class="card"><h2>通知</h2><p class="muted">試作品の通知・状態確認画面です。</p></div></section>
+
+</div>
+<nav><button onclick="go('home','エーデル商事 施工管理')">⌂<br>ホーム</button><button onclick="go('sites','現場一覧')">📋<br>現場</button><button onclick="go('share','共有')">↗<br>共有</button><button onclick="go('notice','通知')">♧<br>通知</button></nav>
+</div>
+<div id="toast" class="toast"></div>
+<script>
+const K='edel_iphone_v2';
+let d=JSON.parse(localStorage.getItem(K)||'null')||{sites:[{id:1,name:'ハイム田原',addr:'立川市曙町3-24-14',date:'',work:'ネズミ対策',amount:77000,shared:true},{id:2,name:'益子邸',addr:'府中市',date:'',work:'',amount:115500,shared:false},{id:3,name:'Kia Ora 204号室',addr:'埼玉県さいたま市南区内谷4丁目12-6',date:'',work:'',amount:27500,shared:false}],comm:[{no:1,site:'ハイム田原',amount:77000},{no:2,site:'益子邸',amount:115500},{no:3,site:'Kia Ora 204号室',amount:27500}]};
+function saveD(){localStorage.setItem(K,JSON.stringify(d));render()}
+function yen(n){return '¥'+Number(n||0).toLocaleString('ja-JP')}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function toast(t){let x=document.getElementById('toast');x.textContent=t;x.style.display='block';setTimeout(()=>x.style.display='none',1500)}
+function go(id,t){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));document.getElementById(id).classList.add('on');document.getElementById('title').textContent=t;window.scrollTo(0,0);render()}
+function save(){if(!site.value.trim()){toast('現場名を入力してください');return}d.sites.push({id:Date.now(),name:site.value.trim(),addr:addr.value,date:date.value,work:work.value,amount:+amount.value||0,shared:false});saveD();site.value=addr.value=date.value=work.value=amount.value='';toast('保存しました');go('sites','現場一覧')}
+function render(){cnt.textContent=d.sites.length;shcnt.textContent=d.sites.filter(x=>x.shared).length;list.innerHTML=d.sites.length?d.sites.map(s=>`<div class="card" onclick="openSite(${s.id})"><b>${esc(s.name)}</b><p class="muted">${esc(s.addr||'住所未入力')}</p><div>${esc(s.work||'施工内容未入力')}　${yen(s.amount)}</div></div>`).join(''):'<div class="empty">現場はありません</div>';shares.innerHTML=d.sites.filter(x=>x.shared).map(s=>`<div class="row"><span>${esc(s.name)}</span><b>${yen(s.amount)}</b></div>`).join('')||'<div class="empty">共有データはありません</div>';let sum=d.comm.reduce((a,x)=>a+(+x.amount||0),0);comm.innerHTML=d.comm.map(x=>`<div class="row"><span>No.${x.no}　${esc(x.site)}</span><b>${yen(x.amount)}</b></div>`).join('')+`<div class="row total"><span>合計金額</span><b>${yen(sum)}</b></div><div class="row total"><span>歩合（2%）</span><b>${yen(sum*.02)}</b></div>`;calc()}
+function openSite(id){let s=d.sites.find(x=>x.id===id);detailbox.innerHTML=`<div class="card"><h2>${esc(s.name)}</h2><p class="muted">${esc(s.addr)}</p><div class="row"><span>作業日</span><b>${esc(s.date||'未入力')}</b></div><div class="row"><span>金額</span><b>${yen(s.amount)}</b></div><div class="row"><span>共有</span><b>${s.shared?'共有中':'個人'}</b></div><button onclick="share(${id})">${s.shared?'共有を解除':'共有する'}</button><button onclick="prefill(${id})">🧾 見積書を作成</button><button onclick="rep(${id})">📸 写真報告書を作成</button></div>`;go('detail','現場詳細')}
+function share(id){let s=d.sites.find(x=>x.id===id);s.shared=!s.shared;saveD();openSite(id);toast(s.shared?'共有しました':'共有を解除しました')}
+function prefill(id){let s=d.sites.find(x=>x.id===id);eaddr.value=s.addr;eplace.value=s.name;econ.value=s.work;eprice.value=s.amount;calc();go('estimate','見積書')}
+function rep(id){let s=d.sites.find(x=>x.id===id);rsite.value=s.name;raddr.value=s.addr;rdate.value=s.date;rcomment.value=s.work;go('report','写真報告書')}
+function calc(){let q=+eqty.value||0,p=+eprice.value||0,s=q*p,t=Math.floor(s*.1);sub.textContent=yen(s);tax.textContent=yen(t);tot.textContent=yen(s+t)}
+function saveEstimate(){toast('見積書データを保存しました')}
+function saveReport(){if(!rsite.value.trim()){toast('現場名を入力してください');return}toast('写真報告書データを保存しました')}
+function addComm(){let n=d.comm.length+1;d.comm.push({no:n,site:'',amount:0});saveD();toast('No.'+n+'を追加しました')}
+render()
+</script>
+</body></html>
