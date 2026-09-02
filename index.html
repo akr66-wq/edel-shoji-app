@@ -95,27 +95,42 @@ function saveReport(){if(!rsite.value.trim()){toast('現場名を入力してく
 function addComm(){let n=d.comm.length+1;d.comm.push({no:n,site:'',amount:0});saveD();toast('No.'+n+'を追加しました')}
 render()
   enableLongPress();
-  function enableLongPress(){
+function enableLongPress(){
   document.querySelectorAll('#list .card').forEach(card=>{
     let timer;
+
     const start=()=>{
       timer=setTimeout(()=>{
         const m=card.getAttribute('onclick')?.match(/openSite\((\d+)\)/);
         if(!m)return;
+
         const id=Number(m[1]);
-        if(confirm('この現場を削除しますか？')){
-          d.sites=d.sites.filter(x=>x.id!==id);
-          saveD();
-          toast('現場を削除しました');
+        const choice=prompt('現場の操作を選んでください\n1：編集\n2：削除\n3：キャンセル');
+
+        if(choice==='2'){
+          if(confirm('この現場を削除しますか？')){
+            d.sites=d.sites.filter(x=>x.id!==id);
+            save();
+            render();
+            toast('現場を削除しました');
+          }
+        }else if(choice==='1'){
+          prefill(id);
+          go('new','現場を編集');
+          toast('現場を編集できます');
         }
       },800);
     };
-    const cancel=()=>clearTimeout(timer);
+
+    const cancel=()=>{
+      clearTimeout(timer);
+    };
+
     card.addEventListener('pointerdown',start);
     card.addEventListener('pointerup',cancel);
     card.addEventListener('pointerleave',cancel);
     card.addEventListener('pointercancel',cancel);
   });
-}
-</script>
+}  
+  </script>
 </body></html>
