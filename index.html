@@ -111,7 +111,7 @@ function enableLongPress(){
           if(confirm('この現場を削除しますか？')){
             d.sites=d.sites.filter(x=>x.id!==id);
             save();
-            render();
+           render();
             toast('現場を削除しました');
           }
       }else if(choice==='1'){
