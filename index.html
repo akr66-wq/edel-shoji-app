@@ -96,6 +96,93 @@ function addComm(){let n=d.comm.length+1;d.comm.push({no:n,site:'',amount:0});sa
 render()
   
 function enableLongPress(){
+document.querySelectorAll('#list .card, #comm .row').forEach(el=>{
+    let timer;
+
+    const start=()=>{
+      timer=setTimeout(()=>{
+        const m=el.getAttribute('onclick')?.match(/openSite\((\d+)\)/);
+
+        // 現場一覧の長押し
+        if(m){
+          const id=Number(m[1]);
+          const choice=prompt('現場の操作を選んでください\n1：編集\n2：削除\n3：キャンセル');
+
+          if(choice==='2'){
+            if(confirm('この現場を削除しますか？')){
+              d.sites=d.sites.filter(x=>x.id!==id);
+              save();
+              render();
+              toast('現場を削除しました');
+            }
+          }else if(choice==='1'){
+            prefill(id);
+            go('new','現場を編集');
+            toast('現場を編集できます');
+          }
+          return;
+        }
+
+        // 歩合表の長押し
+        const text=el.innerText.trim();
+        const noMatch=text.match(/^No\.(\d+)/);
+
+        if(!noMatch) return;
+
+        const no=Number(noMatch[1]);
+        const item=d.comm.find(x=>x.no===no);
+
+        if(!item) return;
+
+        const choice=prompt(
+          '歩合表の操作を選んでください\n' +
+          '1：編集\n' +
+          '2：削除\n' +
+          '3：キャンセル'
+        );
+
+        if(choice==='2'){
+          if(confirm('No.'+no+' を削除しますか？')){
+            d.comm=d.comm.filter(x=>x.no!==no);
+            d.comm.forEach((x,i)=>x.no=i+1);
+            saveD();
+            render();
+            toast('No.'+no+'を削除しました');
+          }
+        }else if(choice==='1'){
+          const newNo=prompt('No.を入力してください',item.no);
+          if(newNo===null) return;
+
+          const newSite=prompt('施工現場を入力してください',item.site||'');
+          if(newSite===null) return;
+
+          const newAmount=prompt('金額を入力してください',item.amount||0);
+          if(newAmount===null) return;
+
+          item.no=Number(newNo)||item.no;
+          item.site=newSite;
+          item.amount=Number(newAmount)||0;
+
+          saveD();
+          render();
+          toast('歩合表を編集しました');
+        }
+
+      },800);
+    };
+
+    const cancel=()=>{
+      clearTimeout(timer);
+    };
+
+    el.addEventListener('touchstart',start,{passive:true});
+    el.addEventListener('touchend',cancel);
+    el.addEventListener('touchcancel',cancel);
+    el.addEventListener('mousedown',start);
+    el.addEventListener('mouseup',cancel);
+    el.addEventListener('mouseleave',cancel);
+  });
+}
   document.querySelectorAll('#list .card').forEach(card=>{
     let timer;
 
