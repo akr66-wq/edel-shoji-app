@@ -426,7 +426,7 @@ function clearAll() {
 
   });
 
-  localStorage.removeItem(STORAGE_KEY);
+ localStorage.removeItem(STORAGE_KEY);
 
  calculate();
 
