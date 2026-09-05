@@ -438,3 +438,81 @@ loadData();
 
 </body>
 </html>
+/* ===== iPhone 1画面幅・横スクロール完全防止 ===== */
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+table {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  table-layout: fixed !important;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  min-width: 0 !important;
+  max-width: none !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+input,
+textarea,
+select {
+  max-width: 100% !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.table-container,
+.table-wrapper,
+.table-wrap,
+.table-scroll {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: hidden !important;
+}
+
+/* iPhoneで6列を収める */
+th:nth-child(1),
+td:nth-child(1) {
+  width: 7% !important;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 14% !important;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  width: 22% !important;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+  width: 25% !important;
+}
+
+th:nth-child(5),
+td:nth-child(5) {
+  width: 14% !important;
+}
+
+th:nth-child(6),
+td:nth-child(6) {
+  width: 18% !important;
+}
